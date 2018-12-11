@@ -3,6 +3,9 @@
   "version": "1.4.0",
   "author": "habilelabs",
   "description": "Seed project",
+  "scripts": {
+    "start": "node app/server.js"
+  },
   "dependencies": {
     "async": "^2.6.1",
     "bcryptjs": "^2.4.3",
