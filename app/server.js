@@ -24,10 +24,6 @@ const moduleFiles = fs.readdirSync(__dirname + '/modules');
 for (let i = 0; i < moduleFiles.length; i++) {
     loadModule(moduleFiles[i], "model");
 }
-//load all controllers
-for (let j = 0; j < moduleFiles.length; j++) {
-    // loadModule(moduleFiles[j], "controller");
-}
 
 // load routes
 for (let j = 0; j < moduleFiles.length; j++) {
