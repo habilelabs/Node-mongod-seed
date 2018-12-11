@@ -1,11 +1,11 @@
-var Q = require('q');
-var userDbService = require('./user-db.service.js');
-var bcrypt = require('bcryptjs');
-var message = require('../../../config/messages.js');
-var _ = require('lodash');
-module.exports = {
-    login: function (username, password) {
-        var deferred = Q.defer();
+const Q = require('q');
+const userDbService = require('./user-db.service.js');
+const bcrypt = require('bcryptjs');
+const message = require('../../../config/messages.js');
+
+class loginService {
+    login(username, password) {
+        const deferred = Q.defer();
         userDbService.getUserByEmail(username,true).then(function (user) {
             if (!user) {
                 deferred.reject('User not Found');
@@ -24,14 +24,16 @@ module.exports = {
         });
 
         return deferred.promise;
-    },
-    logout: function (user) {
+    }
+
+    logout(user) {
         return userDbService.updateLastValid(user._id);
-    },
-    setTokenData: function(decodedToken,user,token){
-        var deferred = Q.defer();
-        var expires = decodedToken.exp * 1000;
-        var tokenData = {
+    }
+
+    setTokenData(decodedToken,user,token) {
+        const deferred = Q.defer();
+        const expires = decodedToken.exp * 1000;
+        const tokenData = {
             user : {
                 _id: user._id,
                 email: user.email,
@@ -45,9 +47,10 @@ module.exports = {
         deferred.resolve(tokenData);
 
         return deferred.promise;
-    },
-    getUserFromId: function (userId) {
-        var deferred = Q.defer();
+    }
+
+    getUserFromId(userId) {
+        const deferred = Q.defer();
         userDbService.getUserById(userId).then(function (user) {
             if (user) {
                 deferred.resolve(user);
@@ -60,5 +63,6 @@ module.exports = {
 
         return deferred.promise;
     }
+}
 
-};
+module.exports = new loginService();

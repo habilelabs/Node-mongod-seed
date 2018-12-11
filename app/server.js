@@ -1,18 +1,17 @@
-var express = require('express');
-var path = require('path');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var fs = require('fs');
-var server = express();
-var passport = require('passport');
-var env = require('process').env;
-var envConfig = require('../config/env-config').getENV();
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const fs = require('fs');
+const server = express();
+const passport = require('passport');
+const env = require('process').env;
+const envConfig = require('../config/env-config').getENV();
 //configure middleware
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({extended: false}));
 //start promise to mongoose and connect
 mongoose.Promise = global.Promise;
-mongoose.connect(envConfig.db_url);
+mongoose.connect(envConfig.db_url, { useNewUrlParser: true });
 server.use(passport.initialize());
 
 
@@ -21,30 +20,31 @@ if(process.env.NODE_ENV === 'local') {
 }
 
 // load all models
-var moduleFiles = fs.readdirSync(__dirname + '/modules');
-for (var i = 0; i < moduleFiles.length; i++) {
+const moduleFiles = fs.readdirSync(__dirname + '/modules');
+for (let i = 0; i < moduleFiles.length; i++) {
     loadModule(moduleFiles[i], "model");
 }
 //load all controllers
-for (var j = 0; j < moduleFiles.length; j++) {
-    loadModule(moduleFiles[j], "controller");
+for (let j = 0; j < moduleFiles.length; j++) {
+    // loadModule(moduleFiles[j], "controller");
 }
 
 // load routes
-for (var j = 0; j < moduleFiles.length; j++) {
+for (let j = 0; j < moduleFiles.length; j++) {
     loadModule(moduleFiles[j], "route");
 }
 /**
  * Function load a module. This function walk to a module folder and load modeles, routes and controllers to express app.
  * @param module
+ * @param type
  */
 function loadModule (module, type) {
-    var moduleLocation = __dirname + '/modules/' + module;
-    var moduleFile = fs.readdirSync(moduleLocation);
+    const moduleLocation = __dirname + '/modules/' + module;
+    const moduleFile = fs.readdirSync(moduleLocation);
     moduleFile.forEach(function loadFile(file) {
-        var fileName = file.split('.');
+        const fileName = file.split('.');
         if (fileName && fileName.length > 0) {
-            var fileType = fileName[1];
+            const fileType = fileName[1];
             if (fileType === type && type ==='model') {
                 // it is a model.
                 return require(moduleLocation + '/' + file);
@@ -88,7 +88,7 @@ mongoose.connection.on('disconnected', function () {
     console.log('Mongoose default connection disconnected');
 });
 
-var port = env.PORT || 9001;
+const port = env.PORT || 9001;
 server.listen( port, function() {
     console.log('Express server listening on port '+port);
 } );

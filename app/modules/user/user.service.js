@@ -1,17 +1,9 @@
-var Q = require('q');
-var message = require('../../../config/messages.js');
-var _ = require('lodash');
-var envConfiguration = require('../../../config/env-config');
-var envConfig = envConfiguration.getENV();
-var UserDbService = require('../user/user-db.service.js');
+const _ = require('lodash');
+const UserDbService = require('../user/user-db.service.js');
 
-module.exports = {
-
-    /**
-     * Service to update user
-     */
-    updateUser: function (userFindObj, userObj) {
+class userService {
+    updateUser(userFindObj, userObj) {
         return UserDbService.updateUser(userFindObj, userObj);
     }
-
-};
+}
+module.exports = new userService();

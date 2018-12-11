@@ -1,13 +1,12 @@
-var passport = require('../../config/passport');
-var Status = require('../../config/Status');
-var Constants = require('../../config/messages');
-var createNamespace = require('continuation-local-storage').createNamespace;
-var myRequest = createNamespace('rollbar data');
-var _ = require('lodash');
+const passport = require('../../config/passport');
+const Status = require('../../config/Status');
+const Constants = require('../../config/messages');
+const createNamespace = require('continuation-local-storage').createNamespace;
+const myRequest = createNamespace('rollbar data');
 
-module.exports = {
-    loggedIn: function (req, res, next) {
-        passport.authenticate('jwt', {session: false}, function (err, user, info) {
+class permissionService {
+    loggedIn(req, res, next) {
+        passport.authenticate('jwt', {session: false}, (err, user, info) => {
             if (err && err.code && err.code !== 0) {
                 res.send(err);
                 return;
@@ -19,9 +18,9 @@ module.exports = {
                 }
                 return;
             }
-            var token = passport.getToken(req);
+            const token = passport.getToken(req);
 
-            return passport.decodeToken(token).then(function (decodedToken) {
+            return passport.decodeToken(token).then((decodedToken) => {
                 if (!decodedToken.user) {
                     res.send(new Status(Status.AUTH_FAILED, Constants.MESSAGES.AUTH.TOKEN_PAYLOAD_ERROR, decodedToken));
                     return;
@@ -33,31 +32,32 @@ module.exports = {
                     expires: new Date(decodedToken.exp * 1000)
                 };
 
-          myRequest.run(function () {
-              myRequest.set('rollbar_person', {
-                  'person':{
-                      'id': user._id.toString(),
-                      'username': user.email,
-                      'email': user.email
-                  }
-              });
-              next();
-          });
+                myRequest.run(() => {
+                    myRequest.set('rollbar_person', {
+                        'person':{
+                            'id': user._id.toString(),
+                            'username': user.email,
+                            'email': user.email
+                        }
+                    });
+                    next();
+                });
 
-      }).catch(function (error) {
-        res.send(new Status(Status.AUTH_FAILED, Constants.MESSAGES.AUTH.TOKEN_EXPIRE, error));
-        return;
-      });
-    })(req, res, next);
-  },
+            }).catch((error) => {
+                res.send(new Status(Status.AUTH_FAILED, Constants.MESSAGES.AUTH.TOKEN_EXPIRE, error));
+                return;
+            });
+        })(req, res, next);
+    }
 
-    isAdmin: function (req, res, next) {
-        var user = req.token.user;
+    isAdmin(req, res, next) {
+        const user = req.token.user;
         if (user.role && user.role !== Constants.ROLES.ADMIN) {
             res.send(new Status(Status.PERM_DENIED, Constants.MESSAGES.AUTH.PERM_DENIED));
             return;
         }
         next();
     }
+}
 
-};
+module.exports = new permissionService();

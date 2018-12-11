@@ -1,23 +1,20 @@
-var apiCodes = require('../../../config/api-codes.js');
-var message = require('../../../config/messages.js');
-var UserDbService = require('./user-db.service.js');
-var UserService = require('./user.service.js');
-var mongoose = require('mongoose');
-var LoginService = require('./login.service');
-var _ = require('lodash');
-var passport = require('../../../config/passport');
+const apiCodes = require('../../../config/api-codes.js');
+const message = require('../../../config/messages.js');
+const UserDbService = require('./user-db.service.js');
+const UserService = require('./user.service.js');
+const mongoose = require('mongoose');
+const LoginService = require('./login.service');
+const passport = require('../../../config/passport');
 
-// Exports Method
-module.exports = function (app) {
+class userController {
 
-    app.createUser = function (req, res) {
-        var origin = req.get('origin');
+     createUser(req, res) {
         if (!req.body.password) {
             req.body.password = '12345678';
         }
         req.body.password = UserDbService.generatePassword(req.body.password);
-        var email = req.body.email;
-        var password = req.body.password;
+         const email = req.body.email;
+         const password = req.body.password;
 
         //check if email found
         if (!email) {
@@ -32,7 +29,7 @@ module.exports = function (app) {
             });
         }
 
-        var userObj = req.body;
+         const userObj = req.body;
 
         UserDbService.create(userObj).then(function (user) {
             if (user.password) {
@@ -51,9 +48,8 @@ module.exports = function (app) {
             });
     };
 
-
-    app.getUsers = function (req, res) {
-        var query = {};
+     getUsers(req, res) {
+         const query = {};
         UserDbService.getAll(query)
             .then(function (users) {
                 return res.status(apiCodes.SUCCESS).send({
@@ -69,8 +65,8 @@ module.exports = function (app) {
     };
 
 
-    app.deleteUser = function (req, res) {
-        var userObj = {_id: mongoose.Types.ObjectId(req.params.userId)};
+     deleteUser(req, res) {
+         const userObj = {_id: mongoose.Types.ObjectId(req.params.userId)};
         UserDbService.removeUser(userObj)
             .then(function (user) {
                 if (!user) {
@@ -94,8 +90,8 @@ module.exports = function (app) {
     };
 
 
-    app.updateUser = function (req, res) {
-        var userObj = req.body;
+     updateUser(req, res) {
+         const userObj = req.body;
         if (userObj._id) {
             delete userObj._id;
         }
@@ -103,7 +99,7 @@ module.exports = function (app) {
             by: req.token.user._id,
             on: Date.now()
         };
-        var userFindObj = {};
+         let userFindObj = {};
         if (req.params.userId) {
             userFindObj = {
                 _id: req.params.userId
@@ -123,16 +119,16 @@ module.exports = function (app) {
             });
     };
 
-    app.userLogin = function (req, res) {
-        var email = req.body.email;
-        var password = req.body.password;
+     userLogin(req, res) {
+         const email = req.body.email;
+         const password = req.body.password;
         if (!email && !password) {
             return res.status(apiCodes.BAD_REQUEST).send({
                 message: message.EMAIL_AND_PASSWORD_NOT_PROVIDED
             });
         }
         LoginService.login(email, password).then(function (user) {
-            var token = passport.generateToken(user);
+            const token = passport.generateToken(user);
             passport.decodeToken(token).then(function (decodedToken) {
                 LoginService.setTokenData(decodedToken, user, token).then(function (tokenData) {
                     return res.status(apiCodes.SUCCESS).send(tokenData);
@@ -151,7 +147,7 @@ module.exports = function (app) {
 
     };
 
-    app.userLogout = function (req, res) {
+     userLogout(req, res) {
         LoginService.logout(req.token.user).then(function (result) {
             res.send(message.MESSAGES.AUTH.TOKEN_INVALID);
         }).catch(function (error) {
@@ -161,5 +157,8 @@ module.exports = function (app) {
             });
         });
     };
+}
 
-};
+module.exports = new userController();
+
+
