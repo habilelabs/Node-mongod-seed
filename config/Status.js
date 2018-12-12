@@ -1,4 +1,4 @@
-var Status = function(code, message, data) {
+const Status = (code, message, data) => {
     this.code = code;
     this.message = message;
     this.data = data;

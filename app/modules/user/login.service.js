@@ -6,7 +6,7 @@ const message = require('../../../config/messages.js');
 class loginService {
     login(username, password) {
         const deferred = Q.defer();
-        userDbService.getUserByEmail(username,true).then(function (user) {
+        userDbService.getUserByEmail(username,true).then((user) => {
             if (!user) {
                 deferred.reject('User not Found');
             }
@@ -19,7 +19,7 @@ class loginService {
             } else {
                 deferred.reject('password do not match');
             }
-        }).catch(function (error) {
+        }).catch((error) => {
             deferred.reject(error);
         });
 
@@ -51,13 +51,13 @@ class loginService {
 
     getUserFromId(userId) {
         const deferred = Q.defer();
-        userDbService.getUserById(userId).then(function (user) {
+        userDbService.getUserById(userId).then((user) =>{
             if (user) {
                 deferred.resolve(user);
             } else {
                 deferred.reject({'message':message.MESSAGES.USER.GET.ERROR_NO_USER + userId});
             }
-        }).catch(function (error) {
+        }).catch((error) => {
             deferred.reject(error);
         });
 

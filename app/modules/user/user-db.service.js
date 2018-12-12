@@ -25,7 +25,7 @@ class userDbService {
         const deferred = Q.defer();
         const userObj = {email: email};
 
-        User.findOne(userObj).exec(function (err, user) {
+        User.findOne(userObj).exec((err, user) => {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -37,7 +37,7 @@ class userDbService {
 
     updateLastValid(id) {
         const deferred = Q.defer();
-        User.findByIdAndUpdate(id, { 'lastValid': new Date() }, { new: true }, function (err, user) {
+        User.findByIdAndUpdate(id, { 'lastValid': new Date() }, { new: true }, (err, user) => {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -61,7 +61,7 @@ class userDbService {
     }
     getUserById(id) {
         const deferred = Q.defer();
-        User.findOne({ _id: id}).exec(function (err, user) {
+        User.findOne({ _id: id}).exec( (err, user) => {
             if (err) {
                 deferred.reject(err);
             } else {

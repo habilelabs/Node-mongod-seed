@@ -31,7 +31,7 @@ class userController {
 
          const userObj = req.body;
 
-        UserDbService.create(userObj).then(function (user) {
+        UserDbService.create(userObj).then((user) => {
             if (user.password) {
                 user.password = null;
             }
@@ -40,7 +40,7 @@ class userController {
                 message: message.CREATION_SUCCESS
             });
         })
-            .catch(function (err) {
+            .catch((err) => {
                 return res.status(apiCodes.INTERNAL_ERROR).send({
                     message: message.ERROR_IN_CREATING_USER,
                     err: err
@@ -51,12 +51,12 @@ class userController {
      getUsers(req, res) {
          const query = {};
         UserDbService.getAll(query)
-            .then(function (users) {
+            .then((users) => {
                 return res.status(apiCodes.SUCCESS).send({
                     data: users
                 });
             })
-            .catch(function (err) {
+            .catch((err) => {
                 return res.status(apiCodes.INTERNAL_ERROR).send({
                     message: message.ERROR_IN_GETTING_USERS,
                     err: err
@@ -68,7 +68,7 @@ class userController {
      deleteUser(req, res) {
          const userObj = {_id: mongoose.Types.ObjectId(req.params.userId)};
         UserDbService.removeUser(userObj)
-            .then(function (user) {
+            .then((user) => {
                 if (!user) {
                     return res.status(apiCodes.NOT_FOUND).send({
                         message: message.USER_NOT_AVAILABLE_WITH_THIS_EMAIL
@@ -81,7 +81,7 @@ class userController {
 
                 }
             })
-            .catch(function (err) {
+            .catch((err) => {
                 return res.status(apiCodes.INTERNAL_ERROR).send({
                     message: message.ERROR_IN_GETTING_USER,
                     err: err
@@ -106,12 +106,12 @@ class userController {
             };
         }
         UserService.updateUser(userFindObj, userObj)
-            .then(function (newUser) {
+            .then((newUser) => {
                 return res.status(apiCodes.SUCCESS).send({
                     message: message.USER_UPDATED
                 });
             })
-            .catch(function (err) {
+            .catch((err) => {
                 return res.status(apiCodes.INTERNAL_ERROR).send({
                     message:message.MESSAGES.USER.UPDATE.ERROR,
                     err: err
@@ -127,19 +127,19 @@ class userController {
                 message: message.EMAIL_AND_PASSWORD_NOT_PROVIDED
             });
         }
-        LoginService.login(email, password).then(function (user) {
+        LoginService.login(email, password).then((user) => {
             const token = passport.generateToken(user);
-            passport.decodeToken(token).then(function (decodedToken) {
-                LoginService.setTokenData(decodedToken, user, token).then(function (tokenData) {
+            passport.decodeToken(token).then((decodedToken) => {
+                LoginService.setTokenData(decodedToken, user, token).then((tokenData) => {
                     return res.status(apiCodes.SUCCESS).send(tokenData);
                 });
-            }).catch(function (error) {
+            }).catch((error) => {
                 return res.status(apiCodes.BAD_REQUEST).send({
                     message: message.ERROR_IN_DECODING_TOKEN,
                     err: error
                 });
             });
-        }).catch(function (error) {
+        }).catch((error) => {
             return res.status(apiCodes.UNAUTHORIZED).send({
                 message: message.EMAIL_AND_PASSWORD_NOT_MATCHED
             });
@@ -148,9 +148,9 @@ class userController {
     };
 
      userLogout(req, res) {
-        LoginService.logout(req.token.user).then(function (result) {
+        LoginService.logout(req.token.user).then((result) =>{
             res.send(message.MESSAGES.AUTH.TOKEN_INVALID);
-        }).catch(function (error) {
+        }).catch((error) => {
             res.status(apiCodes.UNAUTHORIZED).send({
                 'message': message.MESSAGES.USER.LOGOUT.ERROR,
                 err: error

@@ -37,7 +37,7 @@ for (let j = 0; j < moduleFiles.length; j++) {
 function loadModule (module, type) {
     const moduleLocation = __dirname + '/modules/' + module;
     const moduleFile = fs.readdirSync(moduleLocation);
-    moduleFile.forEach(function loadFile(file) {
+    moduleFile.forEach((file) => {
         const fileName = file.split('.');
         if (fileName && fileName.length > 0) {
             const fileType = fileName[1];
@@ -55,7 +55,7 @@ function loadModule (module, type) {
     });
 }
 
-server.use(function (req, res, next) {
+server.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
@@ -70,22 +70,22 @@ server.use(function (req, res, next) {
 
 // register moogoose callbacks
 //On successful connection
-mongoose.connection.on('connected', function () {
+mongoose.connection.on('connected',  () => {
     console.log('Mongoose default connection open to ' + envConfig.db_url);
 });
 
 // If the connection throws an error
-mongoose.connection.on('error', function (err) {
+mongoose.connection.on('error',  (err) => {
     console.log('Mongoose default connection error: ' + err);
 });
 
 // When the connection is disconnected
-mongoose.connection.on('disconnected', function () {
+mongoose.connection.on('disconnected', () => {
     console.log('Mongoose default connection disconnected');
 });
 
 const port = env.PORT || 9001;
-server.listen( port, function() {
+server.listen( port, () => {
     console.log('Express server listening on port '+port);
 } );
 module.exports = server;

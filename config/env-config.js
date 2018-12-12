@@ -4,7 +4,7 @@
  * Module init function.
  */
 module.exports = {
-    getENV : function() {
+    getENV : () => {
         //if no env defined then we will use development
         if(!process.env.NODE_ENV){
             process.env.NODE_ENV = 'development';

@@ -1,7 +1,7 @@
 'use strict';
 const permissions = require('../../utilities/permission.service');
 const userController = require('./user.controller');
-module.exports = function (app) {
+module.exports =  (app) => {
 
     /**
      * Users Api Routes
