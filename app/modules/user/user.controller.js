@@ -107,7 +107,7 @@ class userController {
 
 
     /**
-     * @api {get} /api/v1/users'---' Get All Users
+     * @api {get} /api/v1/users Get All Users
      * @apiVersion 0.0.1
      * @apiName Get All Users
      * @apiGroup Users
