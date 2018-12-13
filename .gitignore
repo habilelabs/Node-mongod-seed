@@ -4,3 +4,4 @@ external
 .idea
 .sass-cache
 .temp
+public/apidoc
