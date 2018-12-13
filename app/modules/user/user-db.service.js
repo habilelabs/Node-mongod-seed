@@ -1,7 +1,6 @@
 //db layer for users model
 const User = require('./user.model');
 const bcrypt = require('bcryptjs');
-const Q = require('q');
 
 class userDbService {
     create(userData) {
@@ -22,29 +21,12 @@ class userDbService {
     }
 
     getUserByEmail(email) {
-        const deferred = Q.defer();
         const userObj = {email: email};
-
-        User.findOne(userObj).exec((err, user) => {
-            if (err) {
-                deferred.reject(err);
-            } else {
-                deferred.resolve(user);
-            }
-        });
-        return deferred.promise;
+        return User.findOne(userObj);
     }
 
     updateLastValid(id) {
-        const deferred = Q.defer();
-        User.findByIdAndUpdate(id, { 'lastValid': new Date() }, { new: true }, (err, user) => {
-            if (err) {
-                deferred.reject(err);
-            } else {
-                deferred.resolve(user);
-            }
-        });
-        return deferred.promise;
+        return User.findByIdAndUpdate(id, { 'lastValid': new Date() }, { new: true });
     }
 
     updateUser(userFindObj, userObj){
@@ -60,15 +42,7 @@ class userDbService {
         });
     }
     getUserById(id) {
-        const deferred = Q.defer();
-        User.findOne({ _id: id}).exec( (err, user) => {
-            if (err) {
-                deferred.reject(err);
-            } else {
-                deferred.resolve(user);
-            }
-        });
-        return deferred.promise;
+        return User.findOne({ _id: id});
     }
 }
 

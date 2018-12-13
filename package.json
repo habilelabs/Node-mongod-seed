@@ -17,8 +17,7 @@
     "mongoose": "^5.2.8",
     "passport": "^0.3.2",
     "passport-jwt": "^2.1.0",
-    "passport-local": "^1.0.0",
-    "q": "^1.5.1"
+    "passport-local": "^1.0.0"
   },
   "apidoc": {
     "name": "node-mongod-seed",

@@ -63,7 +63,7 @@ class userController {
      }
      }
      */
-     createUser(req, res) {
+     async createUser(req, res) {
         if (!req.body.password) {
             req.body.password = '12345678';
         }
@@ -86,7 +86,8 @@ class userController {
 
          const userObj = req.body;
 
-        UserDbService.create(userObj).then((user) => {
+        try {
+           const user =  await  UserDbService.create(userObj);
             if (user.password) {
                 user.password = null;
             }
@@ -94,13 +95,14 @@ class userController {
             return res.status(apiCodes.SUCCESS).send({
                 message: message.CREATION_SUCCESS
             });
-        })
-            .catch((err) => {
-                return res.status(apiCodes.INTERNAL_ERROR).send({
-                    message: message.ERROR_IN_CREATING_USER,
-                    err: err
-                });
+        }
+        catch(err) {
+            return res.status(apiCodes.INTERNAL_ERROR).send({
+                message: message.ERROR_IN_CREATING_USER,
+                err: err
             });
+        }
+
     };
 
 
@@ -158,20 +160,19 @@ class userController {
      ]
      }
      */
-     getUsers(req, res) {
-         const query = {};
-        UserDbService.getAll(query)
-            .then((users) => {
-                return res.status(apiCodes.SUCCESS).send({
-                    data: users
-                });
-            })
-            .catch((err) => {
-                return res.status(apiCodes.INTERNAL_ERROR).send({
-                    message: message.ERROR_IN_GETTING_USERS,
-                    err: err
-                });
-            });
+     async getUsers(req, res) {
+         try {
+            const users = await UserDbService.getAll({});
+             return res.status(apiCodes.SUCCESS).send({
+                 data: users
+             });
+         }
+         catch(err) {
+             return res.status(apiCodes.INTERNAL_ERROR).send({
+                 message: message.ERROR_IN_GETTING_USERS,
+                 err: err
+             });
+         }
     };
 
     /**
@@ -195,28 +196,28 @@ class userController {
             "message":"Successfully Deleted"
      }
      */
-     deleteUser(req, res) {
+     async deleteUser(req, res) {
          const userObj = {_id: mongoose.Types.ObjectId(req.params.userId)};
-        UserDbService.removeUser(userObj)
-            .then((user) => {
-                if (!user) {
-                    return res.status(apiCodes.NOT_FOUND).send({
-                        message: message.USER_NOT_AVAILABLE_WITH_THIS_EMAIL
-                    });
-                }
-                else {
-                    return res.status(apiCodes.SUCCESS).send({
-                        message: message.DELETION_SUCCESS
-                    });
+         try {
+             const user = await UserDbService.removeUser(userObj);
+             if (!user) {
+                 return res.status(apiCodes.NOT_FOUND).send({
+                     message: message.USER_NOT_AVAILABLE_WITH_THIS_EMAIL
+                 });
+             }
+             else {
+                 return res.status(apiCodes.SUCCESS).send({
+                     message: message.DELETION_SUCCESS
+                 });
 
-                }
-            })
-            .catch((err) => {
-                return res.status(apiCodes.INTERNAL_ERROR).send({
-                    message: message.ERROR_IN_GETTING_USER,
-                    err: err
-                });
-            });
+             }
+         }
+         catch(err) {
+             return res.status(apiCodes.INTERNAL_ERROR).send({
+                 message: message.ERROR_IN_GETTING_USER,
+                 err: err
+             });
+         }
     };
 
 
@@ -259,7 +260,7 @@ class userController {
     "message": "User updated Successfully"
     }
      */
-     updateUser(req, res) {
+     async updateUser(req, res) {
          const userObj = req.body;
         if (userObj._id) {
             delete userObj._id;
@@ -274,18 +275,19 @@ class userController {
                 _id: req.params.userId
             };
         }
-        UserService.updateUser(userFindObj, userObj)
-            .then((newUser) => {
-                return res.status(apiCodes.SUCCESS).send({
-                    message: message.USER_UPDATED
-                });
-            })
-            .catch((err) => {
-                return res.status(apiCodes.INTERNAL_ERROR).send({
-                    message:message.MESSAGES.USER.UPDATE.ERROR,
-                    err: err
-                });
+
+        try {
+            await UserService.updateUser(userFindObj, userObj);
+            return res.status(apiCodes.SUCCESS).send({
+                message: message.USER_UPDATED
             });
+        }
+        catch(err) {
+            return res.status(apiCodes.INTERNAL_ERROR).send({
+                message:message.MESSAGES.USER.UPDATE.ERROR,
+                err: err
+            });
+        }
     };
 
     /**
@@ -319,7 +321,7 @@ class userController {
      "expires": "2017-03-28T06:34:26.000Z"
      }
      */
-     userLogin(req, res) {
+     async userLogin(req, res) {
          const email = req.body.email;
          const password = req.body.password;
         if (!email && !password) {
@@ -327,35 +329,43 @@ class userController {
                 message: message.EMAIL_AND_PASSWORD_NOT_PROVIDED
             });
         }
-        LoginService.login(email, password).then((user) => {
+
+        try {
+            const user = await LoginService.login(email, password);
             const token = passport.generateToken(user);
-            passport.decodeToken(token).then((decodedToken) => {
-                LoginService.setTokenData(decodedToken, user, token).then((tokenData) => {
-                    return res.status(apiCodes.SUCCESS).send(tokenData);
-                });
-            }).catch((error) => {
+            const decodedToken = await passport.decodeToken(token);
+            const tokenData = LoginService.setTokenData(decodedToken, user, token);
+            // send response with success
+            return res.status(apiCodes.SUCCESS).send(tokenData);
+        }
+        catch(err) {
+            // error handling
+            // TODO: All types of login errors will be handled here
+            if (err === 'decode_error') {
                 return res.status(apiCodes.BAD_REQUEST).send({
                     message: message.ERROR_IN_DECODING_TOKEN,
                     err: error
                 });
-            });
-        }).catch((error) => {
-            return res.status(apiCodes.UNAUTHORIZED).send({
-                message: message.EMAIL_AND_PASSWORD_NOT_MATCHED
-            });
-        });
+            } else {
+                return res.status(apiCodes.UNAUTHORIZED).send({
+                    message: message.EMAIL_AND_PASSWORD_NOT_MATCHED
+                });
+            }
+        }
 
     };
 
-     userLogout(req, res) {
-        LoginService.logout(req.token.user).then((result) =>{
-            res.send(message.MESSAGES.AUTH.TOKEN_INVALID);
-        }).catch((error) => {
-            res.status(apiCodes.UNAUTHORIZED).send({
-                'message': message.MESSAGES.USER.LOGOUT.ERROR,
-                err: error
-            });
-        });
+     async userLogout(req, res) {
+         try {
+             await LoginService.logout(req.token.user);
+             res.send(message.MESSAGES.AUTH.TOKEN_INVALID);
+         }
+         catch(err) {
+             res.status(apiCodes.UNAUTHORIZED).send({
+                 'message': message.MESSAGES.USER.LOGOUT.ERROR,
+                 err: err
+             });
+         }
     };
 }
 

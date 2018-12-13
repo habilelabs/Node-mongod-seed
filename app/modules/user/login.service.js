@@ -1,29 +1,27 @@
-const Q = require('q');
 const userDbService = require('./user-db.service.js');
 const bcrypt = require('bcryptjs');
 const message = require('../../../config/messages.js');
 
 class loginService {
     login(username, password) {
-        const deferred = Q.defer();
-        userDbService.getUserByEmail(username,true).then((user) => {
-            if (!user) {
-                deferred.reject('User not Found');
-            }
-            else if (user && username === user.email && bcrypt.compareSync(password, user.password)) {
-                if (!user.lastValid) {
-                    user.lastValid = new Date();
-                    user.save();
+        return new Promise((resolve, reject) => {
+            userDbService.getUserByEmail(username).then((user) => {
+                if (!user) {
+                    reject('User not Found');
                 }
-                deferred.resolve(user);
-            } else {
-                deferred.reject('password do not match');
-            }
-        }).catch((error) => {
-            deferred.reject(error);
+                else if (user && username === user.email && bcrypt.compareSync(password, user.password)) {
+                    if (!user.lastValid) {
+                        user.lastValid = new Date();
+                        user.save();
+                    }
+                    resolve(user);
+                } else {
+                    reject('password do not match');
+                }
+            }).catch((error) => {
+                reject(error);
+            });
         });
-
-        return deferred.promise;
     }
 
     logout(user) {
@@ -31,7 +29,6 @@ class loginService {
     }
 
     setTokenData(decodedToken,user,token) {
-        const deferred = Q.defer();
         const expires = decodedToken.exp * 1000;
         const tokenData = {
             user : {
@@ -44,24 +41,21 @@ class loginService {
             expires: new Date(expires).toISOString()
         };
 
-        deferred.resolve(tokenData);
-
-        return deferred.promise;
+        return tokenData;
     }
 
-    getUserFromId(userId) {
-        const deferred = Q.defer();
-        userDbService.getUserById(userId).then((user) =>{
+    async getUserFromId(userId) {
+       try {
+            const user = await userDbService.getUserById(userId);
             if (user) {
-                deferred.resolve(user);
+                return new Promise(resolve => resolve(user));
             } else {
-                deferred.reject({'message':message.MESSAGES.USER.GET.ERROR_NO_USER + userId});
+                return new Promise(reject => reject({'message':message.MESSAGES.USER.GET.ERROR_NO_USER + userId}));
             }
-        }).catch((error) => {
-            deferred.reject(error);
-        });
-
-        return deferred.promise;
+        }
+        catch(err) {
+            return new Promise(reject => reject(err));
+        }
     }
 }
 

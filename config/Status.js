@@ -1,8 +1,8 @@
-const Status = (code, message, data) => {
+function Status(code, message, data) {
     this.code = code;
     this.message = message;
     this.data = data;
-};
+}
 
 Status.OK = 0;
 Status.TIMEOUT = 1;

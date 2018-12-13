@@ -67,17 +67,15 @@ passport.getToken = (req) => {
 };
 
 passport.decodeToken = (token) => {
-    const deferred = Q.defer();
-
-  jwt.verify(token, jwtOptions.secretOrKey, (err, decoded) => {
-    if (err) {
-      deferred.reject(err);
-    } else {
-      deferred.resolve(decoded);
-    }
-  });
-
-  return deferred.promise;
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, jwtOptions.secretOrKey, (err, decoded) => {
+            if (err) {
+                reject('decode_error');
+            } else {
+                resolve(decoded);
+            }
+        });
+    });
 };
 
 
