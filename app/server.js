@@ -13,11 +13,14 @@ server.use(bodyParser.urlencoded({extended: false}));
 mongoose.Promise = global.Promise;
 mongoose.connect(envConfig.db_url, { useNewUrlParser: true });
 server.use(passport.initialize());
-
+const path = require('path');
 
 if(process.env.NODE_ENV === 'local') {
     mongoose.set('debug', true);
 }
+// configure static paths
+server.use(express.static(path.join(__dirname, './../public')));
+
 
 // load all models
 const moduleFiles = fs.readdirSync(__dirname + '/modules');
