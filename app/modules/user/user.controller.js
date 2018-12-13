@@ -1,9 +1,9 @@
 const apiCodes = require('../../../config/api-codes.js');
 const message = require('../../../config/messages.js');
-const UserDbService = require('./user-db.service.js');
-const UserService = require('./user.service.js');
+const userDbService = require('./user-db.service');
+const userService = require('./user.service');
 const mongoose = require('mongoose');
-const LoginService = require('./login.service');
+const loginService = require('./login.service');
 const passport = require('../../../config/passport');
 
 class userController {
@@ -63,11 +63,11 @@ class userController {
      }
      }
      */
-     async createUser(req, res) {
+     static async createUser(req, res) {
         if (!req.body.password) {
             req.body.password = '12345678';
         }
-        req.body.password = UserDbService.generatePassword(req.body.password);
+        req.body.password = userDbService.generatePassword(req.body.password);
          const email = req.body.email;
          const password = req.body.password;
 
@@ -87,7 +87,7 @@ class userController {
          const userObj = req.body;
 
         try {
-           const user =  await  UserDbService.create(userObj);
+           const user =  await  userDbService.create(userObj);
             if (user.password) {
                 user.password = null;
             }
@@ -160,9 +160,9 @@ class userController {
      ]
      }
      */
-     async getUsers(req, res) {
+    static async getUsers(req, res) {
          try {
-            const users = await UserDbService.getAll({});
+            const users = await userDbService.getAll({});
              return res.status(apiCodes.SUCCESS).send({
                  data: users
              });
@@ -196,10 +196,10 @@ class userController {
             "message":"Successfully Deleted"
      }
      */
-     async deleteUser(req, res) {
+    static async deleteUser(req, res) {
          const userObj = {_id: mongoose.Types.ObjectId(req.params.userId)};
          try {
-             const user = await UserDbService.removeUser(userObj);
+             const user = await userDbService.removeUser(userObj);
              if (!user) {
                  return res.status(apiCodes.NOT_FOUND).send({
                      message: message.USER_NOT_AVAILABLE_WITH_THIS_EMAIL
@@ -260,7 +260,7 @@ class userController {
     "message": "User updated Successfully"
     }
      */
-     async updateUser(req, res) {
+    static async updateUser(req, res) {
          const userObj = req.body;
         if (userObj._id) {
             delete userObj._id;
@@ -277,7 +277,7 @@ class userController {
         }
 
         try {
-            await UserService.updateUser(userFindObj, userObj);
+            await userService.updateUser(userFindObj, userObj);
             return res.status(apiCodes.SUCCESS).send({
                 message: message.USER_UPDATED
             });
@@ -321,7 +321,7 @@ class userController {
      "expires": "2017-03-28T06:34:26.000Z"
      }
      */
-     async userLogin(req, res) {
+    static async userLogin(req, res) {
          const email = req.body.email;
          const password = req.body.password;
         if (!email && !password) {
@@ -331,10 +331,10 @@ class userController {
         }
 
         try {
-            const user = await LoginService.login(email, password);
+            const user = await loginService.login(email, password);
             const token = passport.generateToken(user);
             const decodedToken = await passport.decodeToken(token);
-            const tokenData = LoginService.setTokenData(decodedToken, user, token);
+            const tokenData = loginService.setTokenData(decodedToken, user, token);
             // send response with success
             return res.status(apiCodes.SUCCESS).send(tokenData);
         }
@@ -355,9 +355,9 @@ class userController {
 
     };
 
-     async userLogout(req, res) {
+    static async userLogout(req, res) {
          try {
-             await LoginService.logout(req.token.user);
+             await loginService.logout(req.token.user);
              res.send(message.MESSAGES.AUTH.TOKEN_INVALID);
          }
          catch(err) {
@@ -369,6 +369,6 @@ class userController {
     };
 }
 
-module.exports = new userController();
+module.exports =  userController;
 
 

@@ -1,9 +1,9 @@
 const _ = require('lodash');
-const UserDbService = require('../user/user-db.service.js');
+const userDbService = require('../user/user-db.service');
 
 class userService {
-    updateUser(userFindObj, userObj) {
-        return UserDbService.updateUser(userFindObj, userObj);
+    static updateUser(userFindObj, userObj) {
+        return userDbService.updateUser(userFindObj, userObj);
     }
 }
-module.exports = new userService();
+module.exports = userService;

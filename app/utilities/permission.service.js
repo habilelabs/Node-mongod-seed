@@ -3,7 +3,7 @@ const Status = require('../../config/Status');
 const Constants = require('../../config/messages');
 
 class permissionService {
-    loggedIn(req, res, next) {
+    static loggedIn(req, res, next) {
         passport.authenticate('jwt', {session: false}, (err, user, info) => {
             if (err && err.code && err.code !== 0) {
                 res.send(err);
@@ -39,7 +39,7 @@ class permissionService {
         })(req, res, next);
     }
 
-    isAdmin(req, res, next) {
+    static isAdmin(req, res, next) {
         const user = req.token.user;
         if (user.role && user.role !== Constants.ROLES.ADMIN) {
             res.send(new Status(Status.PERM_DENIED, Constants.MESSAGES.AUTH.PERM_DENIED));
@@ -49,4 +49,4 @@ class permissionService {
     }
 }
 
-module.exports = new permissionService();
+module.exports =  permissionService;
