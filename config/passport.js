@@ -4,7 +4,6 @@ ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local').Strategy;
 const jwt = require('jsonwebtoken');
 const loginWebService = require('../app/modules/user/login.service');
-const Q = require('q');
 const Status = require('./Status');
 const Constants = require('./messages');
 
