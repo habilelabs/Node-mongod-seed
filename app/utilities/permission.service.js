@@ -1,8 +1,6 @@
 const passport = require('../../config/passport');
 const Status = require('../../config/Status');
 const Constants = require('../../config/messages');
-const createNamespace = require('continuation-local-storage').createNamespace;
-const myRequest = createNamespace('rollbar data');
 
 class permissionService {
     loggedIn(req, res, next) {
@@ -32,16 +30,7 @@ class permissionService {
                     expires: new Date(decodedToken.exp * 1000)
                 };
 
-                myRequest.run(() => {
-                    myRequest.set('rollbar_person', {
-                        'person':{
-                            'id': user._id.toString(),
-                            'username': user.email,
-                            'email': user.email
-                        }
-                    });
-                    next();
-                });
+                next();
 
             }).catch((error) => {
                 res.send(new Status(Status.AUTH_FAILED, Constants.MESSAGES.AUTH.TOKEN_EXPIRE, error));
