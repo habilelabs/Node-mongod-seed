@@ -21,4 +21,7 @@ Every time run given command to create/update api doc
 #### `npm run create-api-doc`
 
 API doc URL
-[http://localhost:9001/apidoc](http://localhost:9001/apidoc)
+[https://habilelabs.github.io/Node-mongod-seed/](https://habilelabs.github.io/Node-mongod-seed/)
+
+Local API doc URL
+[http://localhost:9001/](http://localhost:9001/)
