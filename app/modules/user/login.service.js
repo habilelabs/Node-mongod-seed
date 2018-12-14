@@ -9,25 +9,25 @@ class loginService {
      * @param password
      * @returns {Promise}
      */
-    static login(username, password) {
-        return new Promise((resolve, reject) => {
-            userDbService.getUserByEmail(username).then((user) => {
-                if (!user) {
-                    reject('User not Found');
+    static async login(username, password) {
+        try {
+            const user = await userDbService.getUserByEmail(username);
+            if (!user) {
+                throw new Error('User not Found');
+            }
+            else if (user && username === user.email && bcrypt.compareSync(password, user.password)) {
+                if (!user.lastValid) {
+                    user.lastValid = new Date();
+                    user.save();
                 }
-                else if (user && username === user.email && bcrypt.compareSync(password, user.password)) {
-                    if (!user.lastValid) {
-                        user.lastValid = new Date();
-                        user.save();
-                    }
-                    resolve(user);
-                } else {
-                    reject('password do not match');
-                }
-            }).catch((error) => {
-                reject(error);
-            });
-        });
+                return user;
+            } else {
+                throw new Error('password do not match');
+            }
+        }
+        catch(e) {
+            throw new Error(e);
+        }
     }
 
     /**
