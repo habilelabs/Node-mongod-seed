@@ -1,4 +1,5 @@
 class messages {
+    // Get all type of messages
      static getMessages() {
         return {
             MESSAGES: {

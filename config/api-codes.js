@@ -1,4 +1,5 @@
 class apiCodes {
+    // List of all api codes
     static getCodes() {
         return {
             "SUCCESS": 200,

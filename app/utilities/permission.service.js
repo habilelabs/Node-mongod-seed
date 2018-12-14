@@ -3,6 +3,12 @@ const Status = require('../../config/Status');
 const Constants = require('../../config/messages');
 
 class permissionService {
+    /**
+     * Check if the user is logged in
+     * @param req
+     * @param res
+     * @param next
+     */
     static loggedIn(req, res, next) {
         passport.authenticate('jwt', {session: false}, (err, user, info) => {
             if (err && err.code && err.code !== 0) {
@@ -39,6 +45,12 @@ class permissionService {
         })(req, res, next);
     }
 
+    /**
+     * Check if the user role is admin
+     * @param req
+     * @param res
+     * @param next
+     */
     static isAdmin(req, res, next) {
         const user = req.token.user;
         if (user.role && user.role !== Constants.ROLES.ADMIN) {

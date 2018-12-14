@@ -3,6 +3,12 @@ const bcrypt = require('bcryptjs');
 const message = require('../../../config/messages.js');
 
 class loginService {
+    /**
+     * Login function
+     * @param username
+     * @param password
+     * @returns {Promise}
+     */
     static login(username, password) {
         return new Promise((resolve, reject) => {
             userDbService.getUserByEmail(username).then((user) => {
@@ -24,10 +30,22 @@ class loginService {
         });
     }
 
+    /**
+     * Logout function
+     * @param user
+     * @returns {*}
+     */
     static logout(user) {
         return userDbService.updateLastValid(user._id);
     }
 
+    /**
+     * Set token data after the user is logged in
+     * @param decodedToken
+     * @param user
+     * @param token
+     * @returns {{user: {_id, email: (*|email|{type, required, index}|{type, required, unique}), role: (*|role|{type}), name}, token: *, expires: string}}
+     */
     static setTokenData(decodedToken,user,token) {
         const expires = decodedToken.exp * 1000;
         const tokenData = {
@@ -44,6 +62,11 @@ class loginService {
         return tokenData;
     }
 
+    /**
+     * Get user data from user id
+     * @param userId
+     * @returns {Promise}
+     */
     static async getUserFromId(userId) {
        try {
             const user = await userDbService.getUserById(userId);

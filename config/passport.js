@@ -7,6 +7,8 @@ const loginWebService = require('../app/modules/user/login.service');
 const Status = require('./Status');
 const Constants = require('./messages');
 
+// Passport Strategy
+
 passport.use(new LocalStrategy(
   (username, password, done) => {
     loginWebService.login(username, password).then((response) => {
@@ -45,7 +47,11 @@ passport.use(new JwtStrategy(jwtOptions,
     });
   }
 ));
-
+/**
+ * Generate token by user data
+ * @param user
+ * @returns {*}
+ */
 passport.generateToken = (user) => {
     const payload = {
     user: user._id,
@@ -60,11 +66,20 @@ passport.generateToken = (user) => {
   return token;
 };
 
+/**
+ * Get token from header
+ * @param req
+ */
 passport.getToken = (req) => {
     const jwtFromRequest = ExtractJwt.fromAuthHeader();
   return jwtFromRequest(req);
 };
 
+/**
+ * Decode token
+ * @param token
+ * @returns {Promise}
+ */
 passport.decodeToken = (token) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, jwtOptions.secretOrKey, (err, decoded) => {

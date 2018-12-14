@@ -87,6 +87,7 @@ class userController {
          const userObj = req.body;
 
         try {
+            // creating a user
            const user =  await  userDbService.create(userObj);
             if (user.password) {
                 user.password = null;
@@ -355,6 +356,12 @@ class userController {
 
     };
 
+    /**
+     * User logout
+     * @param req
+     * @param res
+     * @returns {Promise.<void>}
+     */
     static async userLogout(req, res) {
          try {
              await loginService.logout(req.token.user);
