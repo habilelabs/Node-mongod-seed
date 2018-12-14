@@ -1,14 +1,10 @@
-'use strict';
-
-/**
- * Module init function.
- */
-module.exports = {
-    getENV : () => {
-        //if no env defined then we will use development
+class environment {
+    static getENV() {
         if(!process.env.NODE_ENV){
             process.env.NODE_ENV = 'development';
         }
         return require('./env/' + process.env.NODE_ENV);
     }
-};
+}
+
+module.exports = environment;

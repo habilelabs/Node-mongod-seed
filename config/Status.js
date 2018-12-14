@@ -1,7 +1,9 @@
-function Status(code, message, data) {
-    this.code = code;
-    this.message = message;
-    this.data = data;
+class Status {
+    constructor(code, message, data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
 }
 
 Status.OK = 0;
