@@ -19,8 +19,10 @@ if(process.env.NODE_ENV === 'local') {
     mongoose.set('debug', true);
 }
 // configure static paths
-server.use(express.static(path.join(__dirname, './../public')));
-
+server.use(express.static(path.join(__dirname, './../docs')));
+server.get('*', function (req, res) {
+    res.sendFile(path.join(__dirname, './../docs/index.html'));
+});
 
 // load all models
 const moduleFiles = fs.readdirSync(__dirname + '/modules');

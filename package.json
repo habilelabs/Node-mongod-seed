@@ -5,7 +5,7 @@
   "description": "Seed project",
   "scripts": {
     "start": "node app/server.js",
-    "create-api-doc": "apidoc -i app/modules -o public/apidoc/"
+    "create-api-doc": "apidoc -i app/modules -o docs/"
   },
   "dependencies": {
     "async": "^2.6.1",
